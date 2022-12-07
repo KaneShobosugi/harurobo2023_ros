@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<library path="lib/libundercarriage_node">
+    <class name="harurobo2023_ros/undercarriage_node"
+        type="undercarriage_node::Undercarriage"
+        base_class_type="nodelet::Nodelet">
+        <description></description>
+
+    </class>
+
+</library>
