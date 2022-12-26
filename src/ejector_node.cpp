@@ -11,6 +11,12 @@
 
 namespace ejector_node
 {
+    enum class EjectorState
+    {
+        unlocked,
+        locked,
+        ready,
+    };
 
     class Ejector : public nodelet::Nodelet
     {
@@ -18,6 +24,12 @@ namespace ejector_node
         ros::NodeHandle nh_;
         ros::Subscriber joySub_;
         ros::Publisher canPub_;
+
+        uint16_t shirasuID{0x100};            // EDIT
+        uint16_t solenoidValveBoardID{0x100}; // EDIT
+        uint8_t currentEjectorState{EjectorState::unlocked};
+
+        constexpr bool debugMode{true}; // EDIT
 
     public:
         void
@@ -30,9 +42,39 @@ namespace ejector_node
         }
 
     private:
-        void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy){
+        void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
+        {
+            if (debugMode == false)
+            {
+                //
+                if (_joy->buttons[0]) // A
+                {
+                    can_plugins::Frame frame;
+                    frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
+                    canPub_.publish(frame);
 
+                    can_plugins::Frame frame;
+                    frame = get_frame(shirasuID + 1,10);
+                    canPub_.publish(frame);
+
+                }
+                else if (_joy->buttons[1]) // B
+                {
+                    can_plugins::Frame frame;
+                    frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::homing_mode);
+                    canPub_.publish(frame);
+                }
+
+                
+
+            }
+            else
+            {
+                if (_joy->buttons[] == 1)
+                {
+                }
+            }
         };
     };
-} // namespace undercarriage_node
+} // namespace ejector_node
 PLUGINLIB_EXPORT_CLASS(ejector_node::Ejector, nodelet::Nodelet)
