@@ -49,9 +49,9 @@ namespace undercarriage_node
         ros::Publisher canPub_;
 
         std::array<Wheel, 4> wheelArray = {
-            Wheel(0x100, {+1.0, +1.0}, +1.0),
-            Wheel(0x100, {-1.0, +1.0}, +1.0),
-            Wheel(0x100, {-1.0, -1.0}, +1.0),
+            Wheel(0x130, {+1.0, +1.0}, +1.0),
+            Wheel(0x120, {-1.0, +1.0}, +1.0),
+            Wheel(0x110, {-1.0, -1.0}, +1.0),
             Wheel(0x100, {+1.0, -1.0}, +1.0),
         }; // EDIT
 

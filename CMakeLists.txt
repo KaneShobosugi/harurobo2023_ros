@@ -137,7 +137,12 @@ include
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/harurobo2023_ros_node.cpp)
 
-add_library(undercarriage_node src/undercarriage_node.cpp)
+add_library(
+  ${PROJECT_NAME}
+  src/undercarriage_node.cpp
+  src/ejector_node.cpp
+)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

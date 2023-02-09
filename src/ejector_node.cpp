@@ -25,11 +25,11 @@ namespace ejector_node
         ros::Subscriber joySub_;
         ros::Publisher canPub_;
 
-        uint16_t shirasuID{0x100};            // EDIT
-        uint16_t solenoidValveBoardID{0x100}; // EDIT
-        uint8_t currentEjectorState{EjectorState::unlocked};
+        uint16_t shirasuID{0x004};            // EDIT
+        uint16_t solenoidValveBoardID{0x008}; // EDIT
+        EjectorState currentEjectorState{EjectorState::unlocked};
 
-        constexpr bool debugMode{true}; // EDIT
+        bool debugMode{true}; // EDIT
 
     public:
         void
@@ -44,21 +44,20 @@ namespace ejector_node
     private:
         void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
         {
-            if (debugMode == false)
-            {
+            // if (debugMode == true)
+            // {
                 //
-                if (_joy->buttons[0]) // A
+                if (_joy->buttons[0]==1) // A
                 {
                     can_plugins::Frame frame;
                     frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
                     canPub_.publish(frame);
 
-                    can_plugins::Frame frame;
                     frame = get_frame(shirasuID + 1,10);
                     canPub_.publish(frame);
 
                 }
-                else if (_joy->buttons[1]) // B
+                else if (_joy->buttons[1]==1) // B
                 {
                     can_plugins::Frame frame;
                     frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::homing_mode);
@@ -67,13 +66,13 @@ namespace ejector_node
 
                 
 
-            }
-            else
-            {
-                if (_joy->buttons[] == 1)
-                {
-                }
-            }
+            // }
+            // else
+            // {
+            //     if (_joy->buttons[] == 1)
+            //     {
+            //     }
+            // }
         };
     };
 } // namespace ejector_node
