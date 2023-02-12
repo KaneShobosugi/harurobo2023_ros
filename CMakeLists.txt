@@ -141,6 +141,7 @@ add_library(
   ${PROJECT_NAME}
   src/undercarriage_node.cpp
   src/ejector_node.cpp
+  src/collector_node.cpp
 )
 
 

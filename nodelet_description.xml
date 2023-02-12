@@ -8,4 +8,9 @@
         <description></description>
     </class>
 
+
+    <class name="harurobo2023_ros/collector_node" type="collector_node::Collector" base_class_type="nodelet::Nodelet">
+        <description></description>
+    </class>
+
 </library>
