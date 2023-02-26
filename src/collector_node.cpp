@@ -8,6 +8,7 @@
 #include <../../can_plugins/include/can_utils.hpp>
 
 #include <shirasu_setting.hpp>
+#include <baseBoardForSteppingMotor_setting.hpp>
 
 namespace collector_node
 {
@@ -35,41 +36,43 @@ namespace collector_node
     private:
         void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
         {
-            // jikan de joutai senni
+
+            // 時間で状態を遷移する
+            float displacement{1 * M_PI};
+
             if (_joy->axes[7] > 0) // bend the arm to the inside direction.
             {
                 can_plugins::Frame frame;
-                float radian{+1 * M_PI};
 
-                frame = get_frame(baseBoardForSteppingMotorID + 4 * 0 + 0, 4); // position mode
+                frame = get_frame(baseBoardForSteppingMotorID + 4 * 0 + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::position_mode); // position mode
                 canPub_.publish(frame);
 
-                frame = get_frame(baseBoardForSteppingMotorID + 4 * 0 + 1, radian); // target
+                frame = get_frame(baseBoardForSteppingMotorID + 4 * 0 + 1, displacement); // target
                 canPub_.publish(frame);
             }
             else if (_joy->axes[7] < 0) // bend the arm to the outside direction.
             {
                 can_plugins::Frame frame;
-                float radian{-1 * M_PI};
 
                 frame = get_frame(baseBoardForSteppingMotorID + 4 * 0 + 0, uint8_t(4)); // position mode
                 canPub_.publish(frame);
 
-                frame = get_frame(baseBoardForSteppingMotorID + 4 * 0 + 1, radian); // target
+                frame = get_frame(baseBoardForSteppingMotorID + 4 * 0 + 1, (-1)*displacement); // target
                 canPub_.publish(frame);
             }
 
             //
+            const uint8_t portNo0{0};
             if (_joy->axes[6] > 0) // hold
             {
                 can_plugins::Frame frame;
-                frame = get_frame(solenoidValveBoardID, uint8_t(1 << 0)); // port no 0
+                frame = get_frame(solenoidValveBoardID, uint8_t(1 << portNo0)); // port No.0
                 canPub_.publish(frame);
             }
             else if (_joy->axes[6] < 0) // unleash
             {
                 can_plugins::Frame frame;
-                frame = get_frame(solenoidValveBoardID, uint8_t(0 << 0));
+                frame = get_frame(solenoidValveBoardID, uint8_t(0 << portNo0));
                 canPub_.publish(frame);
             }
         };

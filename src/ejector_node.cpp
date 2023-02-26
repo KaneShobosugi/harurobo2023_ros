@@ -37,42 +37,49 @@ namespace ejector_node
         {
             nh_ = getNodeHandle();
             joySub_ = nh_.subscribe("joy", 1, &Ejector::joyCallback, this);
-            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 1);
+            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 10);
             NODELET_INFO("'ejector_node' has started.");
         }
 
     private:
         void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
         {
-            // if (debugMode == true)
-            // {
-                //
-                if (_joy->buttons[0]==1) // A
+            // ros::Timer timer=nh_.createTimer(ros::Duration(0.1),);
+
+            // STARTボタンが押された場合。
+            if (_joy->buttons[7])
+            {
+                can_plugins::Frame frame;
+
+                ros::Time time_start = ros::Time::now();
+                frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
+                canPub_.publish(frame);
+                ROS_INFO("en1");
+
+                constexpr double highVelocity{10.0}; // EDIT
+                frame = get_frame(shirasuID + 1, highVelocity);
+                canPub_.publish(frame);
+                ROS_INFO("en2");
+
+                const double highVelocityContinuationTime{1.5}; // EDIT
+                while ((ros::Time::now() - time_start).toSec() < highVelocityContinuationTime)
                 {
-                    can_plugins::Frame frame;
-                    frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
-                    canPub_.publish(frame);
-
-                    frame = get_frame(shirasuID + 1,10);
-                    canPub_.publish(frame);
-
+                    volatile int dummy = 0;
                 }
-                else if (_joy->buttons[1]==1) // B
+                const double lowVelocity{2.0}; // EDIT
+                frame = get_frame(shirasuID + 1, lowVelocity);
+                canPub_.publish(frame);
+                ROS_INFO("en3");
+
+                const double lowVelocityContinuationTime{0.5}; // EDIT
+                while ((ros::Time::now() - time_start).toSec() < lowVelocityContinuationTime)
                 {
-                    can_plugins::Frame frame;
-                    frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::homing_mode);
-                    canPub_.publish(frame);
+                    volatile int dummy = 0;
                 }
-
-                
-
-            // }
-            // else
-            // {
-            //     if (_joy->buttons[] == 1)
-            //     {
-            //     }
-            // }
+                frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::homing_mode);
+                canPub_.publish(frame);
+                ROS_INFO("en4");
+            }
         };
     };
 } // namespace ejector_node
