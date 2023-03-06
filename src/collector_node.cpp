@@ -26,15 +26,15 @@ namespace collector_node
         // uint16_t solenoidValveBoardID{0x100};        // EDIT
         uint16_t baseBoardForSteppingMotorID{0x010}; // EDIT
 
-        // enum class ArmMode
-        // {
-        //     inside,
-        //     standstill,
-        //     outside,
-        // };
-        
-        // ArmMode previousArmMode1{ArmMode::standstill};
-        // ArmMode previousArmMode2{ArmMode::standstill};
+        enum class ArmMode
+        {
+            inside,
+            standstill,
+            outside,
+        };
+
+        ArmMode previousArmMode1{ArmMode::standstill};
+        ArmMode previousArmMode2{ArmMode::standstill};
 
     public:
         void
@@ -52,7 +52,7 @@ namespace collector_node
         {
             const float velocityValue{1.0}; // EDIT
 
-            if (!(_joy->buttons[8]))
+            if (_joy->buttons[5])
             {
 
                 int steppingMotorNo{0}; // EDIT 0~3
@@ -61,7 +61,7 @@ namespace collector_node
                 {
                     can_plugins::Frame frame;
 
-                    // if (previousArmMode1 != ArmMode::inside)
+                    if (previousArmMode1 != ArmMode::inside)
                     {
                         frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::velocity_mode);
                         canPub_.publish(frame);
@@ -69,14 +69,14 @@ namespace collector_node
                         frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, velocityValue); // target
                         canPub_.publish(frame);
 
-                        // previousArmMode1 = ArmMode::inside;
+                        previousArmMode1 = ArmMode::inside;
                     }
                 }
                 else if (_joy->axes[7] > 0) // bend the arm to the outside direction.
                 {
                     can_plugins::Frame frame;
 
-                    // if (previousArmMode1 != ArmMode::outside)
+                    if (previousArmMode1 != ArmMode::outside)
                     {
                         frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::velocity_mode); //
                         canPub_.publish(frame);
@@ -84,7 +84,7 @@ namespace collector_node
                         frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, (-1) * velocityValue); // target
                         canPub_.publish(frame);
 
-                        // previousArmMode1 = ArmMode::outside;
+                        previousArmMode1 = ArmMode::outside;
 
                         ROS_INFO("debug: collector_node stepping");
                     }
@@ -93,12 +93,12 @@ namespace collector_node
                 {
                     can_plugins::Frame frame;
 
-                    // if (previousArmMode1 != ArmMode::standstill)
+                    if (previousArmMode1 != ArmMode::standstill)
                     {
                         frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::disable_mode); //
                         canPub_.publish(frame);
 
-                        // previousArmMode1 = ArmMode::standstill;
+                        previousArmMode1 = ArmMode::standstill;
                     }
                 }
 
@@ -117,7 +117,7 @@ namespace collector_node
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
             }
-            else // 同時押し
+            else if (_joy->buttons[4]) // 同時押し
             {
             }
         };

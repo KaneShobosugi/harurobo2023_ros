@@ -42,11 +42,11 @@ namespace solenoidValveBoardDriver_node
 
             if (_solenoid->isOn == true)
             {
-                currentToSendDirection = previousSentDirection | 1 << (_solenoid->portNo);
+                currentToSendDirection = (previousSentDirection | 1 << (_solenoid->portNo));
             }
             else
             {
-                currentToSendDirection = previousSentDirection & !(1 << _solenoid->portNo);
+                currentToSendDirection = (previousSentDirection & !(1 << _solenoid->portNo));
             }
 
             if (currentToSendDirection != previousSentDirection)
