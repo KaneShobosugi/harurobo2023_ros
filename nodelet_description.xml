@@ -13,4 +13,8 @@
         <description></description>
     </class>
 
+   <class name="harurobo2023_ros/solenoidValveBoardDriver_node" type="solenoidValveBoardDriver_node::SolenoidValveBoardDriver" base_class_type="nodelet::Nodelet">
+        <description></description>
+    </class>
+
 </library>

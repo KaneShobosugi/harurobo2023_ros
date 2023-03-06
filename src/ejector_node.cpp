@@ -9,6 +9,11 @@
 
 #include <shirasu_setting.hpp>
 
+#include <solenoidValveBoard.hpp>
+#include <harurobo2023_ros/toSolenoidValveBoardDriverTopic.h>
+
+#define MODE_G
+
 namespace ejector_node
 {
     enum class EjectorState
@@ -24,12 +29,13 @@ namespace ejector_node
         ros::NodeHandle nh_;
         ros::Subscriber joySub_;
         ros::Publisher canPub_;
+        ros::Publisher toSolenoidValveBoardPub_;
 
-        uint16_t shirasuID{0x004};            // EDIT
-        uint16_t solenoidValveBoardID{0x008}; // EDIT
+        uint16_t shirasuID{0x004}; // EDIT
+        // uint16_t solenoidValveBoardID{0x008}; // EDIT
         EjectorState currentEjectorState{EjectorState::unlocked};
 
-        bool debugMode{true}; // EDIT
+        // bool debugMode{true}; // EDIT
 
     public:
         void
@@ -38,12 +44,15 @@ namespace ejector_node
             nh_ = getNodeHandle();
             joySub_ = nh_.subscribe("joy", 1, &Ejector::joyCallback, this);
             canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 10);
+            toSolenoidValveBoardPub_ = nh_.advertise<harurobo2023_ros::toSolenoidValveBoardDriverTopic>("solenoidValveBoard", 10);
+
             NODELET_INFO("'ejector_node' has started.");
         }
 
     private:
         void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
         {
+#ifndef MODE_G
             // ros::Timer timer=nh_.createTimer(ros::Duration(0.1),);
 
             // STARTボタンが押された場合。
@@ -80,6 +89,50 @@ namespace ejector_node
                 canPub_.publish(frame);
                 ROS_INFO("en4");
             }
+#else
+            can_plugins::Frame frame;
+            // const uint8_t portNo2{2};                    // EDIT
+            const double waitingTime{5.0};               // EDIT
+            const double positionModeDisplacement{10.0}; // EDIT
+
+            harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
+
+            if (!(_joy->buttons[8]))
+            {
+                if (_joy->buttons[0])
+                {
+                    frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::homing_mode);
+                    canPub_.publish(frame);
+                }
+                else if (_joy->buttons[1])
+                {
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no0;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = true;
+                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
+
+                    ros::Time time_start = ros::Time::now();
+                    while ((ros::Time::now() - time_start).toSec() < waitingTime)
+                    {
+                        volatile int dummy = 0;
+                    }
+
+                    frame = get_frame(shirasuID + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
+                    canPub_.publish(frame);
+
+                    frame = get_frame(shirasuID + 1, positionModeDisplacement);
+                    canPub_.publish(frame);
+                }
+                else if (_joy->buttons[2])
+                {
+                    // frame = get_frame(solenoidValveBoard::solenoidValveBoardID, uint8_t(solenoidValveBoard::previousSentDirection & !(1 << (solenoidValveBoard::portNo::no2))));
+                    // canPub_.publish(frame);
+                }
+            }
+            else // 同時押し
+            {
+            }
+
+#endif
         };
     };
 } // namespace ejector_node
