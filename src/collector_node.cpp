@@ -52,7 +52,7 @@ namespace collector_node
         {
             const float velocityValue{1.0 * 3.14}; // EDIT
 
-            if (_joy->buttons[5])
+            if (_joy->buttons[5]) // 同時押しset1
             {
 
                 int steppingMotorNo{0}; // EDIT 0~3
@@ -117,7 +117,7 @@ namespace collector_node
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
             }
-            else if (_joy->buttons[4]) // 同時押し
+            else if (_joy->buttons[4]) // 同時押しset2
             {
 
                 int steppingMotorNo{1}; // EDIT 0~3
@@ -171,13 +171,13 @@ namespace collector_node
                 harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
                 if (_joy->axes[6] < 0) // hold
                 {
-                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no0;
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no1;
                     toSolenoidValveBoardDriverTopicFrame.isOn = true;
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
                 else if (_joy->axes[6] > 0) // unleash
                 {
-                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no0;
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no1;
                     toSolenoidValveBoardDriverTopicFrame.isOn = false;
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
