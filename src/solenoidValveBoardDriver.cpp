@@ -20,7 +20,9 @@ namespace solenoidValveBoardDriver_node
         ros::Subscriber solenoidValveSub_;
         ros::Publisher canPub_;
 
-        uint8_t previousSentDirection{}; // 0b00000000
+        // uint8_t previousSentDirection{}; // 0b00000000
+        std::array<bool, 4> previousValveState{};
+        std::array<bool, 4> currentValveState{};
 
         const uint16_t solenoidValveBoardID{0x100}; // EDIT
 
@@ -37,6 +39,8 @@ namespace solenoidValveBoardDriver_node
     private:
         void solenoidValveCallback(const harurobo2023_ros::toSolenoidValveBoardDriverTopic::ConstPtr &_solenoid)
         {
+            // code with a construe
+            /*
             can_plugins::Frame frame;
             uint8_t currentToSendDirection{};
 
@@ -57,6 +61,34 @@ namespace solenoidValveBoardDriver_node
                 previousSentDirection = currentToSendDirection;
 
                 ROS_INFO("debug: solenoidValveCallback 01");
+            }
+            */
+
+            // new code
+            can_plugins::Frame frame;
+            if (_solenoid->isOn == true)
+            {
+                currentValveState[_solenoid->portNo] = true;
+            }
+            else
+            {
+                currentValveState[_solenoid->portNo] = false;
+            }
+
+            // if (currentValveState != previousValveState)
+            {
+                previousValveState = currentValveState;
+
+                frame = get_frame(solenoidValveBoardID + 0, (uint8_t)1); // turn on
+                canPub_.publish(frame);
+
+                uint8_t command{}; // to solenoid valve board
+                for (int i = 0; i < 4; i++)
+                {
+                    command += currentValveState[i] << i;
+                }
+                frame = get_frame(solenoidValveBoardID + 1, command);
+                canPub_.publish(frame);
             }
         };
     };
