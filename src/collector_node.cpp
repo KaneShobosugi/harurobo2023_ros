@@ -24,7 +24,7 @@ namespace collector_node
         ros::Publisher toSolenoidValveBoardPub_;
 
         // uint16_t solenoidValveBoardID{0x100};        // EDIT
-        uint16_t baseBoardForSteppingMotorID{0x010}; // EDIT
+        uint16_t baseBoardForSteppingMotorID{0x300}; // EDIT
 
         enum class ArmMode
         {
@@ -50,7 +50,7 @@ namespace collector_node
     private:
         void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
         {
-            const float velocityValue{1.0}; // EDIT
+            const float velocityValue{1.0 * 3.14}; // EDIT
 
             if (_joy->buttons[5])
             {
@@ -119,6 +119,68 @@ namespace collector_node
             }
             else if (_joy->buttons[4]) // 同時押し
             {
+
+                int steppingMotorNo{1}; // EDIT 0~3
+
+                if (_joy->axes[7] < 0) // bend the arm to the inside direction.
+                {
+                    can_plugins::Frame frame;
+
+                    if (previousArmMode1 != ArmMode::inside)
+                    {
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::velocity_mode);
+                        canPub_.publish(frame);
+
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, velocityValue); // target
+                        canPub_.publish(frame);
+
+                        previousArmMode1 = ArmMode::inside;
+                    }
+                }
+                else if (_joy->axes[7] > 0) // bend the arm to the outside direction.
+                {
+                    can_plugins::Frame frame;
+
+                    if (previousArmMode1 != ArmMode::outside)
+                    {
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::velocity_mode); //
+                        canPub_.publish(frame);
+
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, (-1) * velocityValue); // target
+                        canPub_.publish(frame);
+
+                        previousArmMode1 = ArmMode::outside;
+
+                        ROS_INFO("debug: collector_node stepping");
+                    }
+                }
+                else if (_joy->axes[7] == 0)
+                {
+                    can_plugins::Frame frame;
+
+                    if (previousArmMode1 != ArmMode::standstill)
+                    {
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::disable_mode); //
+                        canPub_.publish(frame);
+
+                        previousArmMode1 = ArmMode::standstill;
+                    }
+                }
+
+                //
+                harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
+                if (_joy->axes[6] < 0) // hold
+                {
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no0;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = true;
+                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
+                }
+                else if (_joy->axes[6] > 0) // unleash
+                {
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no0;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = false;
+                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
+                }
             }
         };
     };
