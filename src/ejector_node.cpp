@@ -31,8 +31,8 @@ namespace ejector_node
         ros::Publisher canPub_;
         ros::Publisher toSolenoidValveBoardPub_;
 
-        uint16_t shirasuID_1{0x004}; // EDIT
-        uint16_t shirasuID_2{0x004}; // EDIT
+        uint16_t shirasuID_1{0x200}; // EDIT
+        uint16_t shirasuID_2{0x210}; // EDIT
 
         // uint16_t solenoidValveBoardID{0x008}; // EDIT
         EjectorState currentEjectorState{EjectorState::unlocked};

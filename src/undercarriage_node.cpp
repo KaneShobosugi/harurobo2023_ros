@@ -52,7 +52,7 @@ namespace undercarriage_node
             Wheel(0x130, {+1.0, +1.0}, +1.0),
             Wheel(0x120, {-1.0, +1.0}, +1.0),
             Wheel(0x110, {-1.0, -1.0}, +1.0),
-            Wheel(0x100, {+1.0, -1.0}, +1.0),
+            Wheel(0x140, {+1.0, -1.0}, +1.0),
         }; // EDIT
 
     public:
