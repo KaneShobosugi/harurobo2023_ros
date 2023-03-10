@@ -10,6 +10,8 @@
 #include <solenoidValveBoard.hpp>
 #include <harurobo2023_ros/toSolenoidValveBoardDriverTopic.h>
 
+#define PORT_NUMBER 5
+
 namespace solenoidValveBoardDriver_node
 {
 
@@ -21,8 +23,8 @@ namespace solenoidValveBoardDriver_node
         ros::Publisher canPub_;
 
         // uint8_t previousSentDirection{}; // 0b00000000
-        std::array<bool, 4> previousValveState{};
-        std::array<bool, 4> currentValveState{};
+        std::array<bool, PORT_NUMBER> previousValveState{};
+        std::array<bool, PORT_NUMBER> currentValveState{};
 
         const uint16_t solenoidValveBoardID{0x100}; // EDIT
 
@@ -83,7 +85,7 @@ namespace solenoidValveBoardDriver_node
                 canPub_.publish(frame);
 
                 uint8_t command{}; // to solenoid valve board
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < PORT_NUMBER; i++)
                 {
                     command += currentValveState[i] << i;
                 }
