@@ -50,6 +50,21 @@ namespace collector_node
     private:
         void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
         {
+            // LED function start
+            bool ledState{};
+            if (_joy->buttons[8])
+            {
+                ledState = !ledState;
+
+                can_plugins::Frame frame;
+                harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
+
+                toSolenoidValveBoardDriverTopicFrame.portNo = 4;
+                toSolenoidValveBoardDriverTopicFrame.isOn = ledState;
+                toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
+            }
+
+            // LED function end
             const float velocityValue{1.0 * 3.14}; // EDIT
 
             if (_joy->buttons[5]) // 同時押しset1
@@ -95,7 +110,7 @@ namespace collector_node
 
                     if (previousArmMode1 != ArmMode::standstill)
                     {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::disable_mode); //
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, 0); // vel=0
                         canPub_.publish(frame);
 
                         previousArmMode1 = ArmMode::standstill;
@@ -160,7 +175,7 @@ namespace collector_node
 
                     if (previousArmMode1 != ArmMode::standstill)
                     {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::disable_mode); //
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, 0); // vel=0
                         canPub_.publish(frame);
 
                         previousArmMode1 = ArmMode::standstill;
