@@ -36,6 +36,8 @@ namespace collector_node
         ArmMode previousArmMode1{ArmMode::standstill};
         ArmMode previousArmMode2{ArmMode::standstill};
 
+        bool ledState{false};
+
     public:
         void
         onInit()
@@ -51,7 +53,6 @@ namespace collector_node
         void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
         {
             // LED function start
-            bool ledState{};
             if (_joy->buttons[8])
             {
                 ledState = !ledState;
