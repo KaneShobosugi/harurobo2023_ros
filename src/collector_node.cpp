@@ -66,7 +66,7 @@ namespace collector_node
             }
 
             // LED function end
-            const float velocityValue{1.0 * 3.14}; // EDIT
+            const float velocityValue{5 * 3.14}; // EDIT
 
             if (_joy->buttons[5]) // 同時押しset1
             {
