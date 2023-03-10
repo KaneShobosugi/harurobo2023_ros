@@ -19,8 +19,8 @@ namespace undercarriage_node
     public:
         const uint16_t id;
         const std::array<double, 2> wheelPosition;
-        const double k1{0.1}; // EDIT
-        const double k2{0.1}; // EDIT
+        const double k1{1.0}; // EDIT
+        const double k2{1.0}; // EDIT
         const double k3;
 
         std::array<double, 2> wheelDirection;
