@@ -1,3 +1,5 @@
+// main branchにマージしないこと。ビルド通すための設定に費やす時間がないので。
+
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
@@ -12,6 +14,8 @@
 #include <solenoidValveBoard.hpp>
 #include <harurobo2023_ros/toSolenoidValveBoardDriverTopic.h>
 
+#include "../include/collector_node_variable.hpp"
+
 namespace collector_node
 {
 
@@ -23,26 +27,72 @@ namespace collector_node
         ros::Publisher canPub_;
         ros::Publisher toSolenoidValveBoardPub_;
 
-        // uint16_t solenoidValveBoardID{0x100};        // EDIT
-        uint16_t baseBoardForSteppingMotorID{0x300}; // EDIT
+        // enum class ArmMode
+        // {
+        //     inside,
+        //     standstill,
+        //     outside,
+        // };
 
-        enum class ArmMode
+        class onesideEquipment
         {
-            inside,
-            standstill,
-            outside,
-        };
+        private:
+            can_plugins::Frame frame;
+            harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
 
-        ArmMode previousArmMode1{ArmMode::standstill};
-        ArmMode previousArmMode2{ArmMode::standstill};
+            class collection
+            {
+            public:
+                const uint16_t solenoidPortNo;
+                const uint16_t steppingMotorNo;
+
+                const float steppingMotorPosDisplacement;
+            };
+            collection collectionOBJ;
+
+            class ejection
+            {
+            public:
+                const uint16_t solenoidPortNo;
+                const uint16_t shirasuID;
+            };
+            ejection ejectionOBJ;
+            int test{};
+
+        public:
+            onesideEquipment(){
+
+            };
+
+            void keyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
+            {
+                uint16_t steppingMotorID{collector_node_variable::baseBoardForSteppingMotorID+4*collection::steppingMotorNo};
+
+                if (_joy->buttons[0] && !previousButtonInput[0])
+                {
+                    frame = get_frame(steppingMotorID+0,baseBoardForSteppingMotor_setting::BIDplus0_Cmd::position_mode);
+                    canPub_.publish
+                }
+                else if (_joy->buttons[1] && !previousButtonInput[1])
+                {
+                }
+            };
+        }; // class onesideEquipment definition
+        onesideEquipment rightEquipment;
+        onesideEquipment leftEquipment;
+
+        // ArmMode previousArmMode1{ArmMode::standstill};
+        // ArmMode previousArmMode2{ArmMode::standstill};
 
         bool ledState{false};
+        static std::array<bool, 11> previousButtonInput; // invalid use of non-static data member
+        std::array<bool, 11> currentButtonInput;
 
     public:
-        void
-        onInit()
+        void onInit()
         {
-            nh_ = getNodeHandle();
+            // rightEquipment.collectionOBJ.solenoidPortNo = 0;
+
             joySub_ = nh_.subscribe("joy", 1, &Collector::joyCallback, this);
             canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 1);
             toSolenoidValveBoardPub_ = nh_.advertise<harurobo2023_ros::toSolenoidValveBoardDriverTopic>("solenoidValveBoard", 10);
@@ -52,153 +102,41 @@ namespace collector_node
     private:
         void joyCallback(const sensor_msgs::Joy::ConstPtr &_joy)
         {
+            can_plugins::Frame frame;
+            harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
+
+            for (int i = 0; i <= 11; i++)
+            {
+                currentButtonInput[i] = (_joy->buttons[i]);
+            }
+
             // LED function start
             if (_joy->buttons[8])
             {
                 ledState = !ledState;
 
-                can_plugins::Frame frame;
-                harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
-
                 toSolenoidValveBoardDriverTopicFrame.portNo = 4;
                 toSolenoidValveBoardDriverTopicFrame.isOn = ledState;
                 toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
             }
-
             // LED function end
-            const float velocityValue{5 * 3.14}; // EDIT
 
-            if (_joy->buttons[5]) // 同時押しset1
+            // main function start
+            // 同時押しセット1 right side
+            if (_joy->buttons[5])
             {
-
-                int steppingMotorNo{0}; // EDIT 0~3
-
-                if (_joy->axes[7] < 0) // bend the arm to the inside direction.
-                {
-                    can_plugins::Frame frame;
-
-                    if (previousArmMode1 != ArmMode::inside)
-                    {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::velocity_mode);
-                        canPub_.publish(frame);
-
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, velocityValue); // target
-                        canPub_.publish(frame);
-
-                        previousArmMode1 = ArmMode::inside;
-                    }
-                }
-                else if (_joy->axes[7] > 0) // bend the arm to the outside direction.
-                {
-                    can_plugins::Frame frame;
-
-                    if (previousArmMode1 != ArmMode::outside)
-                    {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::velocity_mode); //
-                        canPub_.publish(frame);
-
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, (-1) * velocityValue); // target
-                        canPub_.publish(frame);
-
-                        previousArmMode1 = ArmMode::outside;
-
-                        ROS_INFO("debug: collector_node stepping");
-                    }
-                }
-                else if (_joy->axes[7] == 0)
-                {
-                    can_plugins::Frame frame;
-
-                    if (previousArmMode1 != ArmMode::standstill)
-                    {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, (float)0); // vel=0
-                        canPub_.publish(frame);
-
-                        previousArmMode1 = ArmMode::standstill;
-                    }
-                }
-
-                //
-                harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
-                if (_joy->axes[6] < 0) // hold
-                {
-                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no0;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = true;
-                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
-                }
-                else if (_joy->axes[6] > 0) // unleash
-                {
-                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no0;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = false;
-                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
-                }
+                rightEquipment.keyCallback(_joy);
             }
-            else if (_joy->buttons[4]) // 同時押しset2
+            // 同時押しセット2 left side
+            else if (_joy->buttons[4])
             {
-
-                int steppingMotorNo{1}; // EDIT 0~3
-
-                if (_joy->axes[7] < 0) // bend the arm to the inside direction.
-                {
-                    can_plugins::Frame frame;
-
-                    if (previousArmMode1 != ArmMode::inside)
-                    {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::velocity_mode);
-                        canPub_.publish(frame);
-
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, velocityValue); // target
-                        canPub_.publish(frame);
-
-                        previousArmMode1 = ArmMode::inside;
-                    }
-                }
-                else if (_joy->axes[7] > 0) // bend the arm to the outside direction.
-                {
-                    can_plugins::Frame frame;
-
-                    if (previousArmMode1 != ArmMode::outside)
-                    {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 0, baseBoardForSteppingMotor_setting::BIDplus0_Cmd::velocity_mode); //
-                        canPub_.publish(frame);
-
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, (-1) * velocityValue); // target
-                        canPub_.publish(frame);
-
-                        previousArmMode1 = ArmMode::outside;
-
-                        ROS_INFO("debug: collector_node stepping");
-                    }
-                }
-                else if (_joy->axes[7] == 0)
-                {
-                    can_plugins::Frame frame;
-
-                    if (previousArmMode1 != ArmMode::standstill)
-                    {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, (float)0); // vel=0
-                        canPub_.publish(frame);
-
-                        previousArmMode1 = ArmMode::standstill;
-                    }
-                }
-
-                //
-                harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
-                if (_joy->axes[6] < 0) // hold
-                {
-                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no1;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = true;
-                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
-                }
-                else if (_joy->axes[6] > 0) // unleash
-                {
-                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no1;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = false;
-                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
-                }
             }
+
+            // main function end
+
+            previousButtonInput = currentButtonInput;
         };
     };
+
 } // namespace collector_node
 PLUGINLIB_EXPORT_CLASS(collector_node::Collector, nodelet::Nodelet)

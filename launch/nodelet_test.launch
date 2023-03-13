@@ -6,11 +6,11 @@
 
       <node pkg="nodelet" type="nodelet" name="$(arg manager_name)" args="manager" output="screen"/>
 
+      <!-- <param name="num_worker_threads" value="$(arg manager_threads)" /> -->
 
+      <node pkg="nodelet" type="nodelet" name="node_loader0" args="load harurobo2023_ros/undercarriage_node $(arg manager_name)"/>
 
-      <!-- <node pkg="nodelet" type="nodelet" name="node_loader0" args="load harurobo2023_ros/undercarriage_node $(arg manager_name)"/> -->
-
-      <node pkg="nodelet" type="nodelet" name="node_loader1" args="load harurobo2023_ros/ejector_node $(arg manager_name)"/>
+      <!-- <node pkg="nodelet" type="nodelet" name="node_loader1" args="load harurobo2023_ros/ejector_node $(arg manager_name)"/> -->
 
       <node pkg="nodelet" type="nodelet" name="node_loader2" args="load harurobo2023_ros/collector_node $(arg manager_name)"/>
 
