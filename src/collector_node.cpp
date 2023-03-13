@@ -111,7 +111,7 @@ namespace collector_node
 
                     if (previousArmMode1 != ArmMode::standstill)
                     {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, 0); // vel=0
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, (float)0); // vel=0
                         canPub_.publish(frame);
 
                         previousArmMode1 = ArmMode::standstill;
@@ -176,7 +176,7 @@ namespace collector_node
 
                     if (previousArmMode1 != ArmMode::standstill)
                     {
-                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, 0); // vel=0
+                        frame = get_frame(baseBoardForSteppingMotorID + 4 * steppingMotorNo + 1, (float)0); // vel=0
                         canPub_.publish(frame);
 
                         previousArmMode1 = ArmMode::standstill;
