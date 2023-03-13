@@ -19,8 +19,8 @@ namespace undercarriage_node
     public:
         const uint16_t id;
         const std::array<double, 2> wheelPosition;
-        const double k1{1.0}; // EDIT
-        const double k2{1.0}; // EDIT
+        const double k1{30.0}; // EDIT
+        const double k2{30.0}; // EDIT
         const double k3;
 
         std::array<double, 2> wheelDirection;
@@ -93,14 +93,14 @@ namespace undercarriage_node
             std::array<double, 2> linearVelosityViaJoy; //(x,y)
             double angularVelosityViaJoy;
 
-            linearVelosityViaJoy[0] = (+1) * (_joy->axes[0]);
-            linearVelosityViaJoy[1] = (-1) * (_joy->axes[1]);
-            angularVelosityViaJoy = (-1) * (_joy->axes[3]);
+            linearVelosityViaJoy[0] = (-1) * (_joy->axes[0]);
+            linearVelosityViaJoy[1] = (+1) * (_joy->axes[1]);
+            angularVelosityViaJoy = (+1) * (_joy->axes[3]);
 
             for (auto &_wheel : wheelArray)
             {
                 can_plugins::Frame frame;
-                frame = get_frame(_wheel.id + 1, (_wheel.toWheelAngularVelocity(linearVelosityViaJoy, angularVelosityViaJoy)));
+                frame = get_frame(_wheel.id + 1, (float)(_wheel.toWheelAngularVelocity(linearVelosityViaJoy, angularVelosityViaJoy)));//float
                 canPub_.publish(frame);
             }
         };
