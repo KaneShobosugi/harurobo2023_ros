@@ -61,7 +61,7 @@ namespace undercarriage_node
         {
             nh_ = getNodeHandle();
             joySub_ = nh_.subscribe("joy", 1, &Undercarriage::joyCallback, this); // template hikisuu?
-            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 1);
+            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 100);
             NODELET_INFO("'undercarriage_node' has started.");
         }
 

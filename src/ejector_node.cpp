@@ -45,7 +45,7 @@ namespace ejector_node
         {
             nh_ = getNodeHandle();
             joySub_ = nh_.subscribe("joy", 1, &Ejector::joyCallback, this);
-            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 10);
+            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 100);
             toSolenoidValveBoardPub_ = nh_.advertise<harurobo2023_ros::toSolenoidValveBoardDriverTopic>("solenoidValveBoard", 10);
 
             NODELET_INFO("'ejector_node' has started.");

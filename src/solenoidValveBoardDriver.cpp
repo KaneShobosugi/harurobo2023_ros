@@ -34,7 +34,7 @@ namespace solenoidValveBoardDriver_node
         {
             nh_ = getNodeHandle();
             solenoidValveSub_ = nh_.subscribe("solenoidValveBoard", 1, &SolenoidValveBoardDriver::solenoidValveCallback, this);
-            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 1);
+            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 100);
             NODELET_INFO("'solenoidValveBoardDriver_node' has started.");
         }
 
