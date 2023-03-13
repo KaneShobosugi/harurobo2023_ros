@@ -49,10 +49,10 @@ namespace undercarriage_node
         ros::Publisher canPub_;
 
         std::array<Wheel, 4> wheelArray = {
-            Wheel(0x130, {+1.0, +1.0}, +1.0),
-            Wheel(0x120, {-1.0, +1.0}, +1.0),
-            Wheel(0x110, {-1.0, -1.0}, +1.0),
-            Wheel(0x140, {+1.0, -1.0}, +1.0),
+            Wheel(0x110, {+1.0, +1.0}, +1.0),
+            Wheel(0x140, {-1.0, +1.0}, +1.0),
+            Wheel(0x130, {-1.0, -1.0}, +1.0),
+            Wheel(0x120, {+1.0, -1.0}, +1.0),
         }; // EDIT
 
     public:
@@ -93,9 +93,9 @@ namespace undercarriage_node
             std::array<double, 2> linearVelosityViaJoy; //(x,y)
             double angularVelosityViaJoy;
 
-            linearVelosityViaJoy[0] = (-1) * (_joy->axes[0]);
-            linearVelosityViaJoy[1] = (+1) * (_joy->axes[1]);
-            angularVelosityViaJoy = (+1) * (_joy->axes[3]);
+            linearVelosityViaJoy[0] = (+1) * (_joy->axes[0]);
+            linearVelosityViaJoy[1] = (-1) * (_joy->axes[1]);
+            angularVelosityViaJoy = (-1) * (_joy->axes[3]);
 
             for (auto &_wheel : wheelArray)
             {
