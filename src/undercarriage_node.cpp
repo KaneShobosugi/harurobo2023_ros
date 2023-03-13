@@ -93,9 +93,9 @@ namespace undercarriage_node
             std::array<double, 2> linearVelosityViaJoy; //(x,y)
             double angularVelosityViaJoy;
 
-            linearVelosityViaJoy[0] = (+1) * (_joy->axes[0]);
-            linearVelosityViaJoy[1] = (-1) * (_joy->axes[1]);
-            angularVelosityViaJoy = (-1) * (_joy->axes[3]);
+            linearVelosityViaJoy[0] = (+1) * (_joy->axes[3]);
+            linearVelosityViaJoy[1] = (-1) * (_joy->axes[4]);
+            angularVelosityViaJoy = (-1) * (_joy->axes[0]);
 
             for (auto &_wheel : wheelArray)
             {
