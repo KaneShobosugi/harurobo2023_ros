@@ -95,7 +95,7 @@ namespace ejector_node
             can_plugins::Frame frame;
             // const uint8_t portNo2{2};                    // EDIT
             const double waitingTime{5.0};               // EDIT
-            const double positionModeDisplacement{10.0}; // EDIT
+            const float positionModeDisplacement{10.0}; // EDIT
 
             harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
 
