@@ -94,19 +94,19 @@ namespace ejector_node
 #else
             can_plugins::Frame frame;
             // const uint8_t portNo2{2};                    // EDIT
-            const double waitingTime{5.0};               // EDIT
+            const double waitingTime{5.0};              // EDIT
             const float positionModeDisplacement{10.0}; // EDIT
 
             harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
 
-            if (_joy->buttons[5])
+            if (_joy->buttons[5]) // RB
             {
-                if (_joy->buttons[0])
+                if (_joy->buttons[0]) // A
                 {
                     frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::homing_mode);
                     canPub_.publish(frame);
                 }
-                else if (_joy->buttons[1])
+                else if (_joy->buttons[1]) // B
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no2;
                     toSolenoidValveBoardDriverTopicFrame.isOn = true;
@@ -124,14 +124,14 @@ namespace ejector_node
                     frame = get_frame(shirasuID_1 + 1, positionModeDisplacement);
                     canPub_.publish(frame);
                 }
-                else if (_joy->buttons[2])
+                else if (_joy->buttons[2]) // X
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no2;
                     toSolenoidValveBoardDriverTopicFrame.isOn = false;
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
             }
-            else if(_joy->buttons[4])
+            else if (_joy->buttons[4])
             {
                 if (_joy->buttons[0])
                 {
