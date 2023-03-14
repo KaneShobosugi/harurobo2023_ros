@@ -93,14 +93,20 @@ namespace undercarriage_node
             std::array<double, 2> linearVelosityViaJoy; //(x,y)
             double angularVelosityViaJoy;
 
-            linearVelosityViaJoy[0] = (+1) * (_joy->axes[3]);
-            linearVelosityViaJoy[1] = (-1) * (_joy->axes[4]);
+            float horizontalInput = _joy->axes[3];//
+            float verticalInput = _joy->axes[4];
+            // ROS_INFO("%3.20f", verticalInput);
+
+            linearVelosityViaJoy[0] = (+1) * fabsf(horizontalInput)*horizontalInput;
+            linearVelosityViaJoy[1] = (-1) * fabsf(verticalInput)*verticalInput;
             angularVelosityViaJoy = (-1) * (_joy->axes[0]);
+                        ROS_INFO("%3.20f", linearVelosityViaJoy[0]);
+
 
             for (auto &_wheel : wheelArray)
             {
                 can_plugins::Frame frame;
-                frame = get_frame(_wheel.id + 1, (float)(_wheel.toWheelAngularVelocity(linearVelosityViaJoy, angularVelosityViaJoy)));//float
+                frame = get_frame(_wheel.id + 1, (float)(_wheel.toWheelAngularVelocity(linearVelosityViaJoy, angularVelosityViaJoy))); // float
                 canPub_.publish(frame);
             }
         };
