@@ -12,7 +12,8 @@
 #include <solenoidValveBoard.hpp>
 #include <harurobo2023_ros/toSolenoidValveBoardDriverTopic.h>
 
-#define MODE_G
+#define MODE_G                      // gunyon
+#define MODE_RIGHT_EJECTION_SHIRASU // for debug
 
 namespace ejector_node
 {
@@ -94,8 +95,8 @@ namespace ejector_node
 #else
             can_plugins::Frame frame;
             // const uint8_t portNo2{2};                    // EDIT
-            const double waitingTime{5.0};              // EDIT
-            const float positionModeDisplacement{10.0}; // EDIT
+            const double waitingTime{4.0};                    // EDIT
+            const float positionModeDisplacement{0.5 * M_PI}; // EDIT
 
             harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
 
@@ -109,7 +110,7 @@ namespace ejector_node
                 else if (_joy->buttons[1]) // B
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no2;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = true;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = true; // 0b0000->open 0b0100->close
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
 
                     ros::Time time_start = ros::Time::now();
@@ -121,7 +122,7 @@ namespace ejector_node
                     frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
                     canPub_.publish(frame);
 
-                    frame = get_frame(shirasuID_1 + 1, positionModeDisplacement);
+                    frame = get_frame(shirasuID_1 + 1, (+1) * positionModeDisplacement);
                     canPub_.publish(frame);
                 }
                 else if (_joy->buttons[2]) // X
@@ -163,6 +164,26 @@ namespace ejector_node
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
             }
+
+            // for debug
+            if (_joy->buttons[7])
+            {
+
+                frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
+                canPub_.publish(frame);
+
+                frame = get_frame(shirasuID_1 + 1, (+1) * 0.5 * 3.14);
+                canPub_.publish(frame);
+            }else if (_joy->buttons[6])
+            {
+
+                frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::velocity_mode);
+                canPub_.publish(frame);
+
+                frame = get_frame(shirasuID_1 + 1, (-1) * 0.5 * 3.14);
+                canPub_.publish(frame);
+            }
+            // for degug end
 
 #endif
         };

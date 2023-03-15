@@ -19,8 +19,8 @@ namespace undercarriage_node
     public:
         const uint16_t id;
         const std::array<double, 2> wheelPosition;
-        const double k1{30.0}; // EDIT
-        const double k2{30.0}; // EDIT
+        const double k1{20.0}; // EDIT
+        const double k2{20.0}; // EDIT
         const double k3;
 
         std::array<double, 2> wheelDirection;
@@ -93,15 +93,14 @@ namespace undercarriage_node
             std::array<double, 2> linearVelosityViaJoy; //(x,y)
             double angularVelosityViaJoy;
 
-            float horizontalInput = _joy->axes[3];//
+            float horizontalInput = _joy->axes[3]; //
             float verticalInput = _joy->axes[4];
             // ROS_INFO("%3.20f", verticalInput);
 
-            linearVelosityViaJoy[0] = (+1) * fabsf(horizontalInput)*horizontalInput;
-            linearVelosityViaJoy[1] = (-1) * fabsf(verticalInput)*verticalInput;
+            linearVelosityViaJoy[0] = (+1) * fabsf(horizontalInput) * horizontalInput;
+            linearVelosityViaJoy[1] = (-1) * fabsf(verticalInput) * verticalInput;
             angularVelosityViaJoy = (-1) * (_joy->axes[0]);
-                        ROS_INFO("%3.20f", linearVelosityViaJoy[0]);
-
+            // ROS_INFO("%3.20f", linearVelosityViaJoy[0]);
 
             for (auto &_wheel : wheelArray)
             {
