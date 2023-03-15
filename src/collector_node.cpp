@@ -44,7 +44,7 @@ namespace collector_node
         {
             nh_ = getNodeHandle();
             joySub_ = nh_.subscribe("joy", 1, &Collector::joyCallback, this);
-            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 1);
+            canPub_ = nh_.advertise<can_plugins::Frame>("can_tx", 100);
             toSolenoidValveBoardPub_ = nh_.advertise<harurobo2023_ros::toSolenoidValveBoardDriverTopic>("solenoidValveBoard", 10);
             NODELET_INFO("'collector_node' has started.");
         }
