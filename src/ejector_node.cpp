@@ -110,7 +110,7 @@ namespace ejector_node
                 else if (_joy->buttons[1]) // B
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no2;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = true; // 0b0000->open 0b0100->close
+                    toSolenoidValveBoardDriverTopicFrame.isOn = false; // lock
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
 
                     ros::Time time_start = ros::Time::now();
@@ -128,7 +128,19 @@ namespace ejector_node
                 else if (_joy->buttons[2]) // X
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no2;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = false;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = true; // unlock
+                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
+                }
+                else if (_joy->buttons[7]) // START
+                {
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no2;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = false; // lock
+                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
+                }
+                else if (_joy->buttons[6]) // BACK
+                {
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no2;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = true; // unlock
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
             }
@@ -142,7 +154,7 @@ namespace ejector_node
                 else if (_joy->buttons[1])
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no3;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = true;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = false;
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
 
                     ros::Time time_start = ros::Time::now();
@@ -160,29 +172,42 @@ namespace ejector_node
                 else if (_joy->buttons[2])
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no3;
-                    toSolenoidValveBoardDriverTopicFrame.isOn = false;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = true;
+                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
+                }
+                else if (_joy->buttons[7]) // START
+                {
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no3;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = false; // lock
+                    toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
+                }
+                else if (_joy->buttons[6]) // BACK
+                {
+                    toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no3;
+                    toSolenoidValveBoardDriverTopicFrame.isOn = true; // unlock
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
             }
 
             // for debug
-            if (_joy->buttons[7])
-            {
+            /*             if (_joy->buttons[])
+                        {
 
-                frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
-                canPub_.publish(frame);
+                            frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
+                            canPub_.publish(frame);
 
-                frame = get_frame(shirasuID_1 + 1, (+1) * 0.5 * 3.14);
-                canPub_.publish(frame);
-            }else if (_joy->buttons[6])
-            {
+                            frame = get_frame(shirasuID_1 + 1, (+1) * 0.5 * 3.14);
+                            canPub_.publish(frame);
+                        }else if (_joy->buttons[])
+                        {
 
-                frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::velocity_mode);
-                canPub_.publish(frame);
+                            frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::velocity_mode);
+                            canPub_.publish(frame);
 
-                frame = get_frame(shirasuID_1 + 1, (-1) * 0.5 * 3.14);
-                canPub_.publish(frame);
-            }
+                            frame = get_frame(shirasuID_1 + 1, (-1) * 0.5 * 3.14);
+                            canPub_.publish(frame);
+                        }
+             */
             // for degug end
 
 #endif

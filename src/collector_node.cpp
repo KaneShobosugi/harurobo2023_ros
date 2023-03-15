@@ -185,13 +185,13 @@ namespace collector_node
 
                 //
                 harurobo2023_ros::toSolenoidValveBoardDriverTopic toSolenoidValveBoardDriverTopicFrame;
-                if (_joy->axes[6] < 0) // hold
+                if (_joy->axes[6] > 0) // hold
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no1;
                     toSolenoidValveBoardDriverTopicFrame.isOn = true;
                     toSolenoidValveBoardPub_.publish(toSolenoidValveBoardDriverTopicFrame);
                 }
-                else if (_joy->axes[6] > 0) // unleash
+                else if (_joy->axes[6] < 0) // unleash
                 {
                     toSolenoidValveBoardDriverTopicFrame.portNo = solenoidValveBoard::no1;
                     toSolenoidValveBoardDriverTopicFrame.isOn = false;
