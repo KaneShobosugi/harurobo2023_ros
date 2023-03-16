@@ -138,7 +138,7 @@ namespace collector_node
 
                 int steppingMotorNo{1}; // EDIT 0~3
 
-                if (_joy->axes[7] > 0) // bend the arm to the inside direction.
+                if (_joy->axes[7] < 0) // bend the arm to the inside direction.
                 {
                     can_plugins::Frame frame;
 
@@ -153,7 +153,7 @@ namespace collector_node
                         previousArmMode1 = ArmMode::inside;
                     }
                 }
-                else if (_joy->axes[7] < 0) // bend the arm to the outside direction.
+                else if (_joy->axes[7] >0) // bend the arm to the outside direction.
                 {
                     can_plugins::Frame frame;
 

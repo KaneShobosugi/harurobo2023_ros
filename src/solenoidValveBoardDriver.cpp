@@ -87,7 +87,7 @@ namespace solenoidValveBoardDriver_node
                 uint8_t command{}; // to solenoid valve board
                 for (int i = 0; i < PORT_NUMBER; i++)
                 {
-                    command += currentValveState[i] << i;
+                    command += (currentValveState[i] ? 1 : 0) << i;
                 }
                 frame = get_frame(solenoidValveBoardID + 1, command);
                 canPub_.publish(frame);

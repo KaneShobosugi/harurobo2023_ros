@@ -122,8 +122,20 @@ namespace ejector_node
                     frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
                     canPub_.publish(frame);
 
-                    frame = get_frame(shirasuID_1 + 1, (+1) * positionModeDisplacement);
+                    frame = get_frame(shirasuID_1 + 1, (float)+2.4);
                     canPub_.publish(frame);
+
+                    ros::Time time_start2 = ros::Time::now();
+                    while ((ros::Time::now() - time_start2).toSec() < 10)
+                    {
+                        volatile int dummy = 0;
+                    }
+
+
+                    frame = get_frame(shirasuID_1 + 0, shirasu_setting::BIDplus0_Cmd::disable_mode);
+                    canPub_.publish(frame);
+
+
                 }
                 else if (_joy->buttons[2]) // X
                 {
@@ -166,7 +178,17 @@ namespace ejector_node
                     frame = get_frame(shirasuID_2 + 0, shirasu_setting::BIDplus0_Cmd::position_mode);
                     canPub_.publish(frame);
 
-                    frame = get_frame(shirasuID_2 + 1, positionModeDisplacement);
+                    frame = get_frame(shirasuID_2 + 1, (float)+2.2);
+                    canPub_.publish(frame);
+
+                    ros::Time time_start2 = ros::Time::now();
+                    while ((ros::Time::now() - time_start2).toSec() < 10)
+                    {
+                        volatile int dummy = 0;
+                    }
+
+
+                    frame = get_frame(shirasuID_2 + 0, shirasu_setting::BIDplus0_Cmd::disable_mode);
                     canPub_.publish(frame);
                 }
                 else if (_joy->buttons[2])
